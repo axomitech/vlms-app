@@ -7,39 +7,124 @@
             <div class="card-header">LETTER ACTIONS</div>
 
             <div class="card-body">
-               <div class="row">
-                  <div class="col-md-6">
-                    <h5 class="text text-justify text-primary">Letter No: {{$letterNo}}</h5>
-                    <h5 class="text text-justify text-primary">Letter Subject: {{$letterSubject}}</h5>
-                    <h5 class="text text-justify text-primary">Sender: {{$senderName}}</h5>
-                    <h5 class="text text-justify text-primary">Sender: {{$organization}}</h5>
+               <div class="row" >
+                  <div class="col-md-12">
+                    <div class="card p-3 text-right">
+                      <blockquote class="blockquote mb-0">
+                        <p>{{$letterSubject}}<br>{{$letterNo}}<br>{{$letterCrn}}</p>
+                        <footer class="blockquote-footer">
+                          <small class="text-muted">
+                            {{$senderName}} <cite title="Source Title">{{$organization}}</cite>
+                          </small>
+                          <br>
+                          <button type="button" class="btn btn-outline-primary btn-sm" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">VIEW LETTER</button>
+                          @if($forwardStatus <= 0)
+                            <form id="forward-form" hidden>
+                              @foreach ($actions as $value)
+                              <input type="hidden" name="action_map[]" value="{{$value['act_dept_id']}}">  
+                              <input type="hidden" name="action_dept[]" value="{{$value['dept_id']}}">
+                              @endforeach
+                              <input type="text" name="forward_letter" value="{{$letter_id}}">
+                            </form>
+                            @if($finalizeStatus)
+                            <button type="button" class="btn btn-outline-primary btn-sm save-btn" data-form="#forward-form" data-message="That you want to forward these actions!" id="save-forward-btn" data-url="{{route('send_action')}}">FORWARD</button>
+                            @endif
+                          @endif
+                        </footer>
+                      </blockquote>
+                    </div>
                   </div>
-                  <div class="col-md-6">
-                    <button type="button" class="btn btn-default offset-5">FORWARD</button>&emsp;
-                    <button type="button" class="btn btn-default">VIEW LETTER</button>
-                  </div>
+                  
                </div>
                <br>
-               <table class="table table-responsive-lg table-bordered" id="letter-table">
-                    <thead>
-                        <tr>
-                            <th>Sl No.</th><th>Description</th><th>Priority</th><th>Registered Date</th><th>Note</th><th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @php
-                            $i = 1;
-                        @endphp
-                        @foreach ($actions as $value)
-                            <tr>
-                                <td>{{$i}}</td><td>{{$value['action_description']}}</td><td>{{$value['priority_name']}}</td><td>{{\Carbon\Carbon::parse($value['action_date'])->format('d/m/Y')}}</td><td>{{$notes[$i-1]}}</td><td><a data-toggle="modal" data-target="#actionModal" href="#" data-letter="{{$value['letter_id']}}" data-subject="{{$value['action_description']}}" class="action-link" data-action="{{$value['action_id']}}"><i class="fas fa-pen"></i></a>&emsp;<a href="" class="note-link" data-action="{{$value['action_id']}}" data-toggle="modal" data-target="#noteModal" data-action_text="{{$value['action_description']}}"><i class="fas fa-eye"></i><a></td>
-                            </tr>
-                            @php
-                                $i++;
-                            @endphp
-                        @endforeach
-                    </tbody>
-               </table>
+               <div class="collapse" id="collapseExample">
+                <button type="button" class="btn btn-outline-danger btn-sm offset-11 mb-1" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">CLOSE</button>
+                <div class="card card-body" style="height: 50rem;">
+                  <iframe src="{{config('constants.options.storage_url')}}{{$letterPath}}" style="width:100%; height: 100%;">
+                  </iframe>
+                </div>
+              </div>
+               <br>
+               <div class="row" style="overflow: scroll; height: 300px;">
+                  <div class="col-md-12">
+                    <table class="table table-responsive-lg table-bordered" id="letter-table">
+                      <thead>
+                          <tr>
+                              <th>Sl No.</th><th>Department</th><th>Description</th><th>Registered Date</th><th>Note</th><th>Action</th>
+                          </tr>
+                      </thead>
+                      <tbody>
+                          @php
+                              $i = 1;
+                          @endphp
+                          @foreach ($actions as $value)
+                              <tr>
+                                  <td>{{$i}}</td><td>{{$value['department_name']}}</td><td>{{$value['action_description']}}</td><td>{{\Carbon\Carbon::parse($value['action_date'])->format('d/m/Y')}}</td><td>{{$notes[$i-1]}}</td><td><a data-toggle="modal" data-target="#actionModal" href="#" data-letter="{{$value['letter_id']}}" data-subject="{{$value['action_description']}}" class="action-link" data-action="{{$value['action_id']}}"><i class="fas fa-pen"></i></a>&emsp;<a href="" class="note-link" data-action="{{$value['action_id']}}" data-toggle="modal" data-target="#noteModal" data-action_text="{{$value['action_description']}}"><i class="fas fa-eye"></i><a></td>
+                              </tr>
+                              @php
+                                  $i++;
+                              @endphp
+                          @endforeach
+                      </tbody>
+                 </table>
+                  </div>
+               </div>
+               <div class="row">
+                <div class="col-md-5">
+                  <div class="box shadow-lg p-3 mb-5 bg-white rounded min-vh-40">
+                    <!-- <div class="box-header">
+                        <div class="box-tools">
+                        <p style="font-size:18px;font-weight:bold;margin-bottom: 9px; color:#173F5F;">Letters</p>
+                        </div>
+                    </div> -->
+                    <div class="box-body">
+                        <section class="content">
+                            <div class="container-fluid">
+                                <!-- Main row -->
+                                 <div class="row">
+                                    <div class="col-md-12 bg-danger1">
+                                        <form id="note-form" style="margin-top: 5rem;">
+                                            <div class="row">
+                                             <div class="col-md-12">
+                                               <label>Add Note</label>
+                                               <textarea class="form-control" name="note" rows="5"></textarea>
+                                               <label class="text text-danger note"></label>
+                                             </div>
+                                            </div>
+                                            <div class="form-group row">
+                                              @foreach ($actions as $value)
+                                              <input type="hidden" name="letter_action[]" id="letter_action" value="{{$value['action_id']}}">
+                                              @endforeach
+                                             <button type="button" class="btn btn-primary save-btn ml-2" data-url="{{ route('store_note') }}" data-form="#note-form" data-message="That you want to direct a note to this action!" id="save-note-btn">SAVE</button>
+                                           </div>
+                                           </form>
+                                        
+                                        
+                                    </div>
+                                 </div>
+                                <!-- Main row -->
+                            </div><!-- /.container-fluid -->
+                        </section>                 
+                    </div>
+                </div>
+                 </div>
+                 <div class="col-md-7">
+                  <div class="box shadow-lg p-3 mb-5 bg-white rounded min-vh-40" style="height:22rem;">
+                    <div class="box-body">
+                        <section class="content">
+                            <div class="container-fluid">
+                                <!-- Main row -->
+                                <div class="col-md-12 bg-danger1">
+                                  <!-- <div style="width: 60%; margin: auto;"> -->
+                                    <iframe src="{{config('constants.options.storage_url')}}{{$letterPath}}" style="width:32rem; height: 20rem;">
+                                    </iframe>
+                              </div>
+                            </div><!-- /.container-fluid -->
+                        </section>                 
+                    </div>
+                  </div>
+                 </div>
+              </div>
                 
             </div>
         </div>
@@ -47,26 +132,14 @@
 </div>
 <!-- Modal -->
 <div class="modal fade" id="actionModal" tabindex="-1" aria-labelledby="fileModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-md">
+    <div class="modal-dialog modal-xl">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="actionModalLabel">File Preview</h5>
+          <h5 class="modal-title" id="actionModalLabel">Note Entry</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">X</span></button>
         </div>
         <div class="modal-body">
-          <form id="note-form">
-           <div class="row">
-            <div class="col-md-12">
-              <label>Add Note</label>
-              <input type="hidden" name="letter_action" id="letter_action">
-              <textarea class="form-control" name="note" rows="5"></textarea>
-              <label class="text text-danger note"></label>
-            </div>
-           </div>
-           <div class="form-group row">
-            <button type="button" class="btn btn-primary save-btn" data-url="{{ route('store_note') }}" data-form="#note-form" data-message="That you want to direct a note to this action!" id="save-note-btn">SAVE</button>
-          </div>
-          </form>
+            
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -87,7 +160,7 @@
             <div class="col-md-12">
               <table class="table table-responsive-lg table-bordered">
                 <thead>
-                  <tr><th>Notes</th></tr>
+                  <tr><th>Sl No.</th><th>Name</th><th>Notes</th><th>Date</th><th>Time</th></tr>
                 </thead>
                 <tbody id="note-body">
 
@@ -123,7 +196,10 @@ $(function () {
       "responsive": true, "lengthChange": false, "autoWidth": false,
       "buttons": [ "excel", "pdf", "print"]
     }).buttons().container().appendTo('#letter-table_wrapper .col-md-6:eq(0)');
-    
+    $(".buttons-html5").addClass("btn btn-outline-info ml-1");
+    $(".buttons-html5").removeClass('btn-secondary');
+    $(".buttons-print").addClass("btn btn-outline-info ml-1");
+    $(".buttons-print").removeClass('btn-secondary');
   });
 
   $(document).on('click','.action-link',function(){
@@ -140,7 +216,7 @@ $(function () {
       },function(j){
         var tr = "";
         for(var i = 1; i < j.length; i++){
-          tr += "<tr><td>"+j[i].note+"</td></tr>";
+          tr += "<tr><td>"+i+"</td><td>"+j[i].name+"</td><td>"+j[i].note+"</td><td>"+j[i].date_day+"</td><td>"+j[i].date_time+"</td></tr>";
         }
         $('#note-body').html(tr);
       });

@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Auth;
+use DB;
+
 class Letter extends Model
 {
     use HasFactory;
@@ -26,7 +28,28 @@ class Letter extends Model
 
     public static function showLetterAndSender(){
         return Letter::join('senders','letters.id','=','senders.letter_id')
+               ->join('user_departments','letters.user_id','=','user_departments.user_id')
+               ->where([
+                'user_departments.department_id'=>session('role_dept')
+               ])
+               ->orderBy('letters.id','DESC')
                ->select('letter_no','subject','sender_name','letter_path','letters.id AS letter_id','organization')
                ->get();
+    }
+
+    public static function generateLetterCrn($crn){
+
+        return DB::table('letters')
+        ->where('id', $crn[0])
+        ->update(['crn' => $crn[1]]);
+
+    }
+
+    public static function finalizeLetter($letterId){
+
+        return DB::table('letters')
+        ->where('id', $letterId)
+        ->update(['finalize_status' => true]);
+
     }
 }

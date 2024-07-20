@@ -19,9 +19,7 @@
  <link rel="stylesheet" href="{{ asset('plugins/datatables-buttons/css/buttons.bootstrap4.min.css') }}">
   <!-- Theme style -->
   <link rel="stylesheet" href="{{ asset('dist/css/adminlte.min.css') }}">
-  <!-- Select2 -->
-  <link rel="stylesheet" href="{{ asset('css/select2.min.css') }}">
-  
+  <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 </head>
 <body class="hold-transition sidebar-mini layout-fixed">
 <!-- Site wrapper -->
@@ -34,10 +32,7 @@
         <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
       </li>
       <li class="nav-item d-none d-sm-inline-block">
-        <a href="../../index3.html" class="nav-link">Home</a>
-      </li>
-      <li class="nav-item d-none d-sm-inline-block">
-        <a href="#" class="nav-link">Contact</a>
+        <a href="{{route('home')}}" class="nav-link">Government of Assam</a>
       </li>
     </ul>
 
@@ -165,9 +160,9 @@
   <!-- /.navbar -->
 
   <!-- Main Sidebar Container -->
-  <aside class="main-sidebar sidebar-dark-primary elevation-4">
+  <aside class="main-sidebar sidebar-dark-primary elevation-4" style="background-color: #173F5F;">
     <!-- Brand Logo -->
-    <a href="../../index3.html" class="brand-link">
+    <a href="{{route('dashboard')}}" class="brand-link">
       <span class="brand-text font-weight-light">VIP Letter</span>
     </a>
 
@@ -179,13 +174,13 @@
           <img src="{{asset('dist/img/user2-160x160.jpg')}}" class="img-circle elevation-2" alt="User Image">
         </div>
         <div class="info">
-          {{-- <a href="#" class="d-block">
-            @if (Auth::user()->name)
+          <a href="#" class="d-block">
+            {{-- @if (Auth::user()->name)
 
             {{Auth::user()->name}}
               
-            @endif
-          </a> --}}
+            @endif--}}
+          </a>
         </div>
       </div>
 
@@ -195,22 +190,77 @@
       <nav class="mt-2">
         <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
             <li class="nav-item">
-                <a href="{{route('diarize')}}" class="nav-link">
+                <a href="{{route('home1')}}" class="nav-link">
+                <i class="nav-icon fas fa-home"></i>
+                  <p>
+                  Home
+                  </p>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{{route('dashboard')}}" class="nav-link">
                   <i class="nav-icon fas fa-th"></i>
+                  <p>
+                  Dashboard
+                  </p>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{{route('home')}}" class="nav-link">
+                <i class="nav-icon fas fa-building"></i>
+                  <p>
+                  Department
+                  </p>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{{route('diarize')}}" class="nav-link">
+                <i class="nav-icon fas fa-pencil-alt"></i>
                   <p>
                     Diarize
                   </p>
                 </a>
               </li>
+          <!-- Add icons to the links using the .nav-icon class
+               with font-awesome or any other icon font library -->
+          {{-- <li class="nav-item">
+            <a href="#" class="nav-link">
+            <i class="nav-icon fas fa-envelope"></i>
+              <p>
+                Letters
+                <i class="right fas fa-angle-left"></i>
+              </p>
+            </a>
+            <ul class="nav nav-treeview">
               <li class="nav-item">
+                <a href="{{ route('dashboard') }}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Drafted</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="{{ route('dashboard') }}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Inbox</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="{{ route('dashboard') }}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Sent</p>
+                </a>
+              </li>
+            </ul>
+          </li> --}}
+          <li class="nav-item">
                 <a href="{{route('letters')}}" class="nav-link">
-                  <i class="nav-icon fas fa-th"></i>
+                  <i class="nav-icon fas fa-envelope"></i>
                   <p>
                     Letters
                   </p>
                 </a>
               </li>
-              <li class="nav-item">
+              {{-- <li class="nav-item">
                 <a href="{{route('action_letters')}}" class="nav-link">
                   <i class="nav-icon fas fa-th"></i>
                   <p>
@@ -225,40 +275,24 @@
                     Letter Actions
                   </p>
                 </a>
-              </li>
-          <!-- Add icons to the links using the .nav-icon class
-               with font-awesome or any other icon font library -->
+              </li> --}}
           <li class="nav-item">
-            <a href="#" class="nav-link">
-              <i class="nav-icon fas fa-tachometer-alt"></i>
-              <p>
-                Dashboard
-                <i class="right fas fa-angle-left"></i>
-              </p>
-            </a>
-            <ul class="nav nav-treeview">
-              <li class="nav-item">
-                <a href="../../index.html" class="nav-link">
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>Dashboard v1</p>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="../../index2.html" class="nav-link">
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>Dashboard v2</p>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="../../index3.html" class="nav-link">
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>Dashboard v3</p>
-                </a>
-              </li>
-            </ul>
+              <a href="{{route('dashboard')}}" class="nav-link">
+              <i class="nav-icon fas fa-user-cog"></i>
+                <p>
+                  Settings
+                </p>
+              </a>
           </li>
           
-          
+          <li class="nav-item">
+            <a href="{{route('test')}}" class="nav-link">
+            <i class="nav-icon fas fa-user-cog"></i>
+              <p>
+                logout
+              </p>
+            </a>
+        </li>
              
          
         </ul>
@@ -302,9 +336,9 @@
 
   <footer class="main-footer">
     <div class="float-right d-none d-sm-block">
-      <b>Version</b> 3.2.0
+    Designed & Developed by <b>National Informatics Center, Assam.</b>
     </div>
-    <strong>Copyright &copy; 2014-2021 <a href="https://adminlte.io">AdminLTE.io</a>.</strong> All rights reserved.
+    <strong>Copyright &copy; Government of Assam</strong> &nbsp; All rights reserved.
   </footer>
 
   <!-- Control Sidebar -->
@@ -326,8 +360,7 @@
 <!-- AdminLTE for demo purposes -->
 <script src="{{asset('dist/js/demo.js')}}"></script>
 <script src="{{asset('js/sweetalert2@11.js')}}"></script>
-<!-- Select2 -->
-<script src="{{ asset('js/select2.min.js') }}"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 @yield('scripts')
 </body>
 </html>

@@ -20,7 +20,7 @@
                         @endphp
                         @foreach ($letters as $value)
                             <tr>
-                                <td>{{$i}}</td><td>{{$value['letter_no']}}</td><td>{{$value['subject']}}</td><td>{{$value['sender_name']}}</td><td><a href="{{storage_path('app/'.$value['letter_path'])}}"><i class="fas fa-file-pdf"></i></a></td><td><a href="{{route('action_lists',[$value['letter_id'],$value['letter_no'],$value['subject'],$value['sender_name'],$value['organization']])}}" data-letter="{{$value['letter_id']}}" data-subject="{{$value['subject']}}" class="action-link"><i class="fas fa-pen"></i></a></td>
+                                <td>{{$i}}</td><td>{{$value['letter_no']}}</td><td>{{$value['subject']}}</td><td>{{$value['sender_name']}}</td><td><a href="{{storage_path('app/'.$value['letter_path'])}}"><i class="fas fa-file-pdf"></i></a></td><td><a href="{{route('action_lists',[$value['letter_id'],$value['letter_no'],$value['subject'],$value['sender_name'],$value['organization'],encrypt($value['letter_path'])])}}" data-letter="{{$value['letter_id']}}" data-subject="{{$value['subject']}}" class="action-link"><i class="fas fa-pen"></i></a></td>
                             </tr>
                             @php
                                 $i++;

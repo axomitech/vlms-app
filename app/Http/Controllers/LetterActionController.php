@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
 use App\Http\Requests\StoreLetterActionRequest;
 use App\Http\Requests\UpdateLetterActionRequest;
 use App\Models\LetterAction;
@@ -9,7 +10,9 @@ use App\Models\Department;
 use App\Models\LetterPriority;
 use App\Models\ActionDepartmentMap;
 use App\Models\LetterActionResponse;
+use App\Models\ActionSent;
 use App\Models\Letter;
+use App\Models\Common;
 use DB;
 
 class LetterActionController extends Controller
@@ -25,24 +28,31 @@ class LetterActionController extends Controller
         return view('deligate.action_letters',compact('letters','departments','priorities'));
     }
 
-    public function actions($id,$letter,$subject,$sender,$org)
+    public function actions($id)
     {
-        $letter_id = $id;
-        $letterNo = $letter;
-        $letterSubject = $subject;
-        $senderName = $sender;
-        $organization = $org;
+        $letter_id = decrypt($id);
+        $letterNo = Common::getSingleColumnValue('letters','id',$letter_id,'letter_no');
+        $letterSubject = Common::getSingleColumnValue('letters','id',$letter_id,'subject');
+        $senderName = Common::getSingleColumnValue('senders','letter_id',$letter_id,'sender_name');
+        $organization = Common::getSingleColumnValue('senders','letter_id',$letter_id,'organization');
+        $letterPath = Common::getSingleColumnValue('letters','id',$letter_id,'letter_path');
+        $letterCrn = Common::getSingleColumnValue('letters','id',$letter_id,'crn');
+        $finalizeStatus = Common::getSingleColumnValue('letters','id',$letter_id,'finalize_status');
         $actions = LetterAction::getDepartmentActions($letter_id);
+        $forwardStatus = ActionSent::isLetterForwarded($letter_id);
         $notes = [];
         $i = 0;
         foreach($actions AS $value){
             $note = LetterActionResponse::getActionLastNote($value['action_id']);
             if($note != null){
                 $notes[$i] = $note->action_remarks;
+            }else{
+                $notes[$i] = '';
+
             }
             $i++;
         }
-        return view('deligate.actions',compact('actions','letterNo','letterSubject','letter_id','notes','senderName','organization'));
+        return view('deligate.actions',compact('actions','letterNo','letterSubject','letter_id','notes','senderName','organization','letterPath','forwardStatus','letterCrn','finalizeStatus'));
     }
 
     public function letterIndex()
@@ -52,18 +62,60 @@ class LetterActionController extends Controller
         $departments = Department::getAllDepartments();
         return view('deligate.letter_lists',compact('letters','departments','priorities'));
     }
-    public function letterActions($id,$letter,$subject,$sender,$org)
+    public function letterActions($id)
     {
-        $letter_id = $id;
-        $letterNo = $letter;
-        $letterSubject = $subject;
-        $senderName = $sender;
-        $organization = $org;
-        $priorities = LetterPriority::getAllPriorities();
+        $letter_id = decrypt($id);
+        $letterNo = Common::getSingleColumnValue('letters','id',$letter_id,'letter_no');
+        $letterSubject = Common::getSingleColumnValue('letters','id',$letter_id,'subject');
+        $senderName = Common::getSingleColumnValue('senders','letter_id',$letter_id,'sender_name');
+        $organization = Common::getSingleColumnValue('senders','letter_id',$letter_id,'organization');
+        $letterPath = Common::getSingleColumnValue('letters','id',$letter_id,'letter_path');
+        $letterCrn = Common::getSingleColumnValue('letters','id',$letter_id,'crn');
+        $forwardStatus = ActionSent::isLetterForwarded($letter_id);
         $departments = Department::getAllDepartments();
         $actions = LetterAction::getDepartmentActions($letter_id);
         
-        return view('deligate.action_list',compact('actions','letterNo','letterSubject','letter_id','senderName','organization','priorities','departments'));
+        return view('deligate.action_list',compact('actions','letterNo','letterSubject','letter_id','senderName','organization','departments','letterPath','letterCrn'));
+    }
+
+    public function finalizeActions(Request $request){
+        if($request->ajax()){
+            $jData = [];
+
+            $validate = $request->validate([
+                'finalize_letter' => 'required|numeric|min:1',
+            ]);
+            if(!$validate){
+                $jData[1] = [
+                    'message'=>'Something went wrong! Please try again.'.$e->getMessage(),
+                    'status'=>'error'
+                ];
+                return response()->json($jData,500);
+            }
+            
+        
+            DB::beginTransaction();
+    
+                try {
+
+                    $letter = $request->finalize_letter;
+                    Letter::finalizeLetter($letter);
+                    DB::commit();
+                    $jData[1] = [
+                        'message'=>'Actions are successfully finalized.',
+                        'status'=>'success'
+                    ];
+                    
+                } catch (\Exception $e) {
+                    DB::rollback();
+                    $jData[1] = [
+                        'message'=>'Something went wrong! Please try again.'.$e->getMessage(),
+                        'status'=>'error'
+                    ];
+                }
+
+                return response()->json($jData,200);
+        }
     }
     /**
      * Show the form for creating a new resource.
@@ -86,12 +138,15 @@ class LetterActionController extends Controller
                 try {
 
                     $departments = $request->departments;
-                    $actionId = LetterAction::storeLetterAction([
-                        $request->letter,
-                        $request->priority,
-                        $request->letter_action,
-                    ]);
+                    $actions = $request->letter_action;
+                    $letter = $request->letter;
                     for($i = 0; $i < count($departments); $i++){
+                        
+                        $actionId = LetterAction::storeLetterAction([
+                            $letter,
+                            $actions,
+                        ]);
+                        
                         ActionDepartmentMap::storeDepartmentActions([
                             $actionId,
                             $departments[$i]
@@ -107,7 +162,6 @@ class LetterActionController extends Controller
                     DB::rollback();
                     $jData[1] = [
                         'message'=>'Something went wrong! Please try again.'.$e->getMessage(),
-                        'candidate'=>'',
                         'status'=>'error'
                     ];
                 }

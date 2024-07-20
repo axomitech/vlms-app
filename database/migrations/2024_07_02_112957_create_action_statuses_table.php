@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('action_statuses', function (Blueprint $table) {
             $table->id();
+            $table->string('status_name')->comment('Name of status of action.');
             $table->timestamps();
         });
     }

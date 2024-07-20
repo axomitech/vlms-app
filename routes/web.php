@@ -16,14 +16,28 @@ Route::get('/letters', [App\Http\Controllers\LetterController::class, 'showLette
 Route::post('/store_letter', [App\Http\Controllers\LetterController::class, 'store'])->name('store_letter');
 Route::get('/action_letters', [App\Http\Controllers\LetterActionController::class, 'index'])->name('action_letters');
 Route::get('/letter_lists', [App\Http\Controllers\LetterActionController::class, 'letterIndex'])->name('letter_lists');
-Route::get('/actions/{id}/{no}/{letter}/{sender}/{org}', [App\Http\Controllers\LetterActionController::class, 'actions'])->name('actions');
-Route::get('/action_lists/{id}/{no}/{letter}/{sender}/{org}', [App\Http\Controllers\LetterActionController::class, 'letterActions'])->name('action_lists');
+Route::get('/actions/{id}', [App\Http\Controllers\LetterActionController::class, 'actions'])->name('actions');
+Route::get('/action_lists/{id}', [App\Http\Controllers\LetterActionController::class, 'letterActions'])->name('action_lists');
 Route::get('/action_notes', [App\Http\Controllers\LetterActionResponseController::class, 'actionNotes'])->name('action_notes');
 Route::post('/store_action', [App\Http\Controllers\LetterActionController::class, 'store'])->name('store_action');
 Route::post('/store_note', [App\Http\Controllers\LetterActionResponseController::class, 'store'])->name('store_note');
+Route::post('/store_response', [App\Http\Controllers\LetterActionResponseController::class, 'storeResponse'])->name('store_response');
+Route::post('/finalize_letter', [App\Http\Controllers\LetterActionController::class, 'finalizeActions'])->name('finalize_letter');
+Route::post('/send_action', [App\Http\Controllers\ActionSentController::class, 'store'])->name('send_action');
+Route::get('/session_user/{user}/{dept}/{role}', [App\Http\Controllers\SessionInitiationController::class, 'index'])->name('session_user');
+Route::get('/inbox', [App\Http\Controllers\ActionSentController::class, 'index'])->name('inbox');
+Route::get('/outbox', [App\Http\Controllers\ActionSentController::class, 'outbox'])->name('outbox');
+Route::get('/responds/{sent}/{act}/{letter}',[App\Http\Controllers\ActionSentController::class, 'response'])->name('responds');
 Route::get("/log", function(){
     Log::channel('i_love_this_logging_thing')->info("Action log debug test", ['log-string' => ['user'=>1], "run"]);
  
     return ["result" => true];
 });
+Route::get('/home1', [App\Http\Controllers\HomeController::class, 'box'])->name('home1');
+Route::get('/dashboard', [App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
+Route::get('/dashboard-data', [App\Http\Controllers\DashboardController::class, 'dashboard_data'])->name('dashboard-data');
+Route::get('/pdf_genarator/{id}', [App\Http\Controllers\PDFController::class, 'generatePDF'])->name('pdf_genarator');
+Route::get('/acknowledge_email/{id}', [App\Http\Controllers\AcknowledgeController::class, 'index'])->name('acknowledge_email');
+Route::get('/acknowledge_letter/{id}', [App\Http\Controllers\AcknowledgeController::class, 'ack_letter_generation'])->name('acknowledge_letter');
+Route::post('/acknowledge_letter', [App\Http\Controllers\AcknowledgeController::class, 'ack_letter_save'])->name('submit.ackLetter');
 

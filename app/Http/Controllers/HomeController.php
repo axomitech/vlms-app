@@ -28,13 +28,19 @@ class HomeController extends Controller
      */
     public function index()
     {
-        session(['role_user' => UserDepartment::roleUser(Auth::user()->id,1,1)]);
+        
+        $sessionUser = UserDepartment::roleUser(Auth::user()->id);
         Log::channel('dblog')->info('This is a test log message.');
-        return view('home');
+        return view('home',compact('sessionUser'));
+
     }
 
     public function test()
     {
         return view('test');
+    }
+    public function box()
+    {
+        return view('home1');
     }
 }

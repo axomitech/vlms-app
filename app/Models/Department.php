@@ -14,4 +14,12 @@ class Department extends Model
         return Department::select('id','department_name')->get();
 
     }
+
+    public static function getDepartmentAbbreviation($departmentId){
+        
+        return Department::where([
+            'id'=>$departmentId
+        ])->value('abbreviation');
+
+    }
 }

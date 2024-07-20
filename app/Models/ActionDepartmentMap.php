@@ -9,6 +9,7 @@ use Auth;
 class ActionDepartmentMap extends Model
 {
     use HasFactory;
+    
    public static function storeDepartmentActions($departmentAction){
     $actionDepartment = new ActionDepartmentMap;
     $actionDepartment->letter_action_id = $departmentAction[0];
@@ -20,7 +21,6 @@ class ActionDepartmentMap extends Model
    public static function getActionDepartment($actionDetails){
         return ActionDepartmentMap::where([
             'letter_action_id'=>$actionDetails[0],
-            'department_id'=>$actionDetails[1]
         ])->value('id'); 
    }
 }

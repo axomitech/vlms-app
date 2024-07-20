@@ -28,7 +28,7 @@ class StoreLetterRequest extends FormRequest
             'priority'=>'required|numeric|min:1|max:'.LetterPriority::max('id'),
             'category'=>'required|numeric|min:1|max:'.LetterCategory::max('id'),
             'letter'=>'required|mimes:jpg,pdf,png,jpeg|min:50|max:10000',
-            'letter_no'=>'required|alpha_num',
+            'letter_no'=>'required|string',
             'letter_date'=>'required|date|date_format:Y-m-d',
             'received_date'=>'required|date|date_format:Y-m-d',
             'diary_date'=>'required|date|date_format:Y-m-d',

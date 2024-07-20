@@ -2,6 +2,19 @@
 
 @section('content')
 <div class="row">
+ <div class="col-md-12">
+    <div class="collapse" id="collapseExample">
+      <a class="offset-11 btn btn-outline-danger mb-1" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
+        CLOSE
+      </a>
+      <div class="card card-body">
+        <embed src="" style="height: 30rem;" 
+        type="application/pdf" id="letter-view">
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row">
     <div class="col-md-12">
         <div class="card">
             <div class="card-header">LETTER DIARIZE</div>
@@ -20,7 +33,16 @@
                         @endphp
                         @foreach ($letters as $value)
                             <tr>
-                                <td>{{$i}}</td><td>{{$value['letter_no']}}</td><td>{{$value['subject']}}</td><td>{{$value['sender_name']}}</td><td><a href="{{storage_path('app/'.$value['letter_path'])}}"><i class="fas fa-file-pdf"></i></a></td>
+                                <td>{{$i}}</td><td>{{$value['letter_no']}}</td><td>{{$value['subject']}}</td><td>{{$value['sender_name']}}</td><td><a class="file-btn" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample" target="__blank" data-letter_path="{{config('constants.options.storage_url')}}{{$value['letter_path']}}"><i class="fas fa-file-pdf"></i></a>
+                                 @if (session('role') == 2)
+                                  &nbsp;
+                                  <a href="{{route('action_lists',[encrypt($value['letter_id'])])}}" class="action-link"><i class="fas fa-pen"></i></a>
+                                 @endif
+                                 @if (session('role') == 3)
+                                  &nbsp;
+                                  <a href="{{route('actions',[encrypt($value['letter_id'])])}}" class="action-link"><i class="fas fa-pen"></i></a>
+                                 @endif
+                                </td>
                             </tr>
                             @php
                                 $i++;
@@ -33,24 +55,15 @@
         </div>
     </div>
 </div>
-<!-- Modal -->
-<div class="modal fade" id="fileModal" tabindex="-1" aria-labelledby="fileModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="fileModalLabel">File Preview</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">X</span></button>
-        </div>
-        <div class="modal-body">
-          <div id="fileContent"></div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        </div>
-      </div>
-    </div>
-  </div>
+
 @section('scripts')
+
+<script>
+  $(document).on('click','.file-btn',function(){
+     $('#letter-view').attr('src',$(this).data('letter_path'));
+  });
+</script>
+
     <!-- DataTables  & Plugins -->
 <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
 <script src="{{ asset('plugins/datatables-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
@@ -71,7 +84,10 @@
       "responsive": true, "lengthChange": false, "autoWidth": false,
       "buttons": [ "excel", "pdf", "print"]
     }).buttons().container().appendTo('#letter-table_wrapper .col-md-6:eq(0)');
-    
+    $(".buttons-html5").addClass("btn btn-outline-info ml-1");
+    $(".buttons-html5").removeClass('btn-secondary');
+    $(".buttons-print").addClass("btn btn-outline-info ml-1");
+    $(".buttons-print").removeClass('btn-secondary');
   });
 
     </script>

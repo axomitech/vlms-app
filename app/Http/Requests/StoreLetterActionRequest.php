@@ -25,7 +25,6 @@ class StoreLetterActionRequest extends FormRequest
     {
         return [
 
-            "priority"=>"required|numeric|min:".LetterPriority::min('id')."|max:".LetterPriority::max('id'),
             "letter_action"=>"required",
             "departments"    => "required|array|min:1",
             "departments.*"  => "required|numeric|distinct|min:".Department::min('id').'|max:'.Department::max('id'),
@@ -37,10 +36,6 @@ class StoreLetterActionRequest extends FormRequest
     {
         return [
 
-            "priority.required"=>"Please select priority of action.",
-            "priority.numeric"=>"Please select a valid priority of action.",
-            "priority.min"=>"Please select a valid priority of action.",
-            "priority.max"=>"Please select a valid priority of action.",
             "letter_action.required"=>"Please provide letter action.",
             "departments.required"    => "Please select a department.",
             "departments.array"    => "Please select a valid department.",

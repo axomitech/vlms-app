@@ -6,8 +6,10 @@ use App\Http\Requests\StoreLetterRequest;
 use App\Http\Requests\UpdateLetterRequest;
 use App\Models\Letter;
 use App\Models\Sender;
+use App\Models\Department;
 use App\Models\LetterPriority;
 use App\Models\LetterCategory;
+use Carbon\Carbon;
 use DB;
 
 class LetterController extends Controller
@@ -48,7 +50,7 @@ class LetterController extends Controller
                 
                 if ($request->file('letter')->isValid()) {
 
-                    $letterPath = $request->letter->store('letters/'.$letterCategory[$request->category]);
+                    $letterPath = $request->letter->store('public/letters/'.$letterCategory[$request->category]);
 
                 }else{
 
@@ -85,7 +87,13 @@ class LetterController extends Controller
                     ];
 
                     $letterId = Letter::storeLetter($letterDetails);
-                    
+                    $abbreviation = Department::getDepartmentAbbreviation(session('role_dept'));
+                    $year = Carbon::now()->year;
+                    $crn = [
+                        $letterId,
+                        $abbreviation."CRN/".$year."/".$letterId
+                    ];
+                    Letter::generateLetterCrn($crn);
                     $senderDetails = [
 
                         $letterId,
